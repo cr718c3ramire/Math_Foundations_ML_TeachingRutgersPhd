@@ -1,0 +1,332 @@
+
+  
+  \documentclass[12pt]{article}
+ \usepackage{tikz-cd}
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,decorations.pathreplacing,backgrounds,positioning,fit}
+\usepackage[conditional,light,first,bottomafter]{draftcopy}
+\usepackage{graphics}
+ \usepackage{graphicx}
+ \usepackage[tight,footnotesize]{subfigure}
+ \usepackage{scalerel}
+ \usepackage{cancel}
+ 
+ 
+
+\usepackage{enumerate}
+
+ 
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{amssymb,amsthm}
+\usepackage{amsmath}
+\usepackage{color}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\newtheorem*{acknowledgments}{Acknowledgments}
+\newtheorem{definition}{Definition}
+\newtheorem{exercise}{Exercise}[section]
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{mathtools}
+\usepackage{mathrsfs}
+\usepackage[left=3.2cm,right=3.2cm,top=3.8cm,bottom=4cm]{geometry}
+
+
+ 
+
+ 
+\title{LU factorizations}
+ 
+
+\author{C\'{e}sar Ram\'{i}rez Ib\'{a}\~{n}ez  }
+\date{September 23, 2022 }
+\begin{document}
+
+\section{LU}
+
+We define arrays 
+\begin{equation}
+L_{k}:= \begin{bmatrix}
+| & | & | & | & | & | & | & | \\
+| & | & | & | & | & | & | & | \\ 
+\mathbf{e}_1 & \mathbf{e}_2 & \cdots & \mathbf{e}_{k-1} & \mathbf{v}_{k} & \mathbf{e}_{k+1} & \cdots & \mathbf{e}_n \\ 
+| & | & | & | & | & | & | & | \\ 
+| & | & | & | & | & | & | & |
+\end{bmatrix} 
+\end{equation}
+with 
+\begin{equation}
+\mathbf{v}_{k}:=\begin{bmatrix}
+0 \\ 
+\vdots \\ 
+0 \\ 
+1 \\ 
+ -\frac{a_{k+1,k}^{(k-1)}}{a_{k,k}^{(k-1)}}\\ 
+\cdots \\ 
+-\frac{a_{n,k}^{(k-1)}}{a_{k,k}^{(k-1)}}
+\end{bmatrix} 
+\end{equation}
+
+We might as well say
+\begin{align*}
+L_k=I_{n}-\frac{1}{a_{k,k}^{(k-1)}}\begin{bmatrix}
+0 & \cdots & 0 & 0 & \cdots & 0 \\ 
+\cdots & \cdots & \vdots & \cdots & \cdots & \cdots \\ 
+\cdots & \cdots & 0 & \cdots & \cdots & \cdots \\ 
+\cdots & \cdots & a^{(k-1)}_{k+1,k} & \cdots & \cdots & \cdots \\ 
+\cdots & \cdots & a^{(k-1)}_{k+2,k} & \cdots & \cdots & \cdots \\ 
+\cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\ 
+0 & \cdots & a^{(k-1)}_{n,k} & 0 & \cdots & 0
+\end{bmatrix} 
+\end{align*}
+
+With $L_k$ we have that 
+\begin{equation}
+\tilde{L}A=L_{n-1}L_{n-2}\cdots L_1 A=U
+\end{equation}
+and so 
+\begin{equation}\label{L_from_inversesL_k}
+A=L_1^{-1}L_2^{-1}\cdots L_{n-1}^{-1} U=LU
+\end{equation}
+Now, we want to define an LU factorization in order to invert a matrix. It is pointless to ask the computer to simply invert and obtain $L_k^{-1}$ to obtain $L$. But it is possible to show that due to the simple form of the $L_k$ matrices, we can show the inverse of $L_k$ is obtained by flipping the signs of certain elements:
+\begin{equation}
+L_{k}^{-1}=I_n+\frac{1}{a_{k,k}^{(k-1)}}\begin{bmatrix}
+0 & \cdots & 0 & 0 & \cdots & 0 \\ 
+\cdots & \cdots & \vdots & \cdots & \cdots & \cdots \\ 
+\cdots & \cdots & 0 & \cdots & \cdots & \cdots \\ 
+\cdots & \cdots & a^{(k-1)}_{k+1,k} & \cdots & \cdots & \cdots \\ 
+\cdots & \cdots & a^{(k-1)}_{k+2,k} & \cdots & \cdots & \cdots \\ 
+\cdots & \cdots & \cdots & \cdots & \cdots & \cdots \\ 
+0 & \cdots & a^{(k-1)}_{n,k} & 0 & \cdots & 0
+\end{bmatrix} 
+\end{equation}
+
+or in $L_k$ as above, simply replace $\mathbf{v}_k$ by 
+\begin{equation}\label{kth_col_inverse}
+\mathbf{v}^{-}_{k}:=\begin{bmatrix}
+0 \\ 
+\vdots \\ 
+0 \\ 
+1 \\ 
+ \frac{a_{k+1,k}^{(k-1)}}{a_{k,k}^{(k-1)}}\\ 
+\cdots \\ 
+\frac{a_{n,k}^{(k-1)}}{a_{k,k}^{(k-1)}}
+\end{bmatrix} 
+\end{equation}
+Initializing \texttt{U=A.copy()} in Python, suppose at step $k$ you have modified $A$ so far $k-1$ times. By this step $k$, $U$ is the so far modified $A_{k-1}$, i.e., in the algorithm so far we have
+\begin{equation}
+U=A_{k-1}=L_{k-1}\cdots L_1 A 
+\end{equation}
+and
+\begin{verbatim}
+L_k=np.eye(n)
+L_k[k+1: , k]=-U[k+1:, k]/U[k,k].
+\end{verbatim}
+Now, you could say you get $L$ by applying \eqref{L_from_inversesL_k}. Note
+
+\begin{equation}
+L=L_1^{-1}\cdots L_{n-1}^{-1}\text{ has }k\text{th column equal to \eqref{kth_col_inverse} definition of } \mathbf{v}^{-}_{k}  \leftarrow!!!
+\end{equation}
+In other words,
+\begin{equation}\label{wujun_algo_great_observation}
+L=
+\begin{bmatrix}
+| & | &  & | \\ 
+\mathbf{v}_1^- & \mathbf{v}_2^- & \vdots & \mathbf{v}_n^- \\ 
+| & | & • & |
+\end{bmatrix}  \leftarrow!
+\end{equation}
+ I tried to verify by noting 
+ \begin{equation}
+ L_{1}^{-1}L_2^{-1}=\begin{bmatrix}
+| & | & | &  \cdots & | \\ 
+\mathbf{v}_1^- & \mathbf{e}_2 &\mathbf{e}_3 & \cdots & \mathbf{e}_n \\ 
+| & | & | & \cdots & |
+\end{bmatrix}
+\begin{bmatrix}
+| & | & |  & \cdots & | \\ 
+\mathbf{e}_1  & \mathbf{v}_2^{-} & \mathbf{e}_3  &\cdots & \mathbf{e}_n \\ 
+| & | & | & \cdots &|
+\end{bmatrix}
+ \end{equation}
+ if expanded as $\sum$ (columns $\times$ rows) we get
+ \begin{align*}
+  L_{1}^{-1}L_2^{-1}=  \mathbf{v}_1^- \mathbf{e}_1^* + \mathbf{e}_2\mathbf{e}_2^*+\sum_{k=3}^n   \mathbf{e}_k \Big(\frac{a^{(1)}_{k,2}}{a^{(1)}_{2,2}}\mathbf{e}_2+\mathbf{e}_{k}\Big)^*
+ \end{align*}
+and note what $\mathbf{e}_k  \mathbf{e}_2^*$ is: It is ALMOST the zero matrix, with all elements but TWO equal to zero, and the remaining elements in positions (row,col)$=(k,2)$, $(k,k)$ are
+\begin{equation}
+\frac{a^{(1)}_{k,2}}{a^{(1)}_{2,2}}\big( \mathbf{e}_k  \mathbf{e}_2^*\big)_{k,2}=\frac{a^{(1)}_{k,2}}{a^{(1)}_{2,2}}\hspace{0.3in}\text{ and }\hspace{0.2in} (\mathbf{e}_k  \mathbf{e}_k^*)_{k,k}=1
+\end{equation}
+ Thus, effectively we have the first step of the following induction, claiming that if 
+ \begin{equation}
+ L_1^{-1}L_2^{-1}\cdots L_{k}^{-1}=
+ \begin{bmatrix}
+| & \cdots & | & | & \cdots & | \\ 
+\mathbf{v}_1^- & \cdots & \mathbf{v}_k^{-} & \mathbf{e}_{k+1} & \cdots & \mathbf{e}_n \\ 
+| & \cdots & | & | & \cdots & |
+\end{bmatrix}
+ \end{equation}
+ then
+ \begin{equation}
+(L_1^{-1}L_2^{-1}\cdots L_{k}^{-1})L_{k+1}^{-1}=
+\begin{bmatrix}
+| & \cdots & | & | & \cdots & | \\ 
+\mathbf{v}_1^- & \cdots & \mathbf{v}_{k+1}^{-} & \mathbf{e}_{k+2} & \cdots & \mathbf{e}_n \\ 
+| & \cdots & | & | & \cdots & |
+\end{bmatrix}.
+ \end{equation}
+
+
+ 
+ 
+\section{Outer Products and LU}
+
+\begin{align}\label{we_want}
+LU=\begin{bmatrix}
+| & • & | \\ 
+\mathbf{l}_1 & \cdots & \mathbf{l}_n \\ 
+| & • & |
+\end{bmatrix} 
+\begin{bmatrix}
+\text{---}\text{---} & \mathbf{u}_1^*& \text{---}\text{---} \\ 
+  & \cdots &  \\ 
+\text{---}\text{---} & \mathbf{u}_n^*& \text{---}\text{---}
+\end{bmatrix} 
+=\mathbf{l}_1 \mathbf{u}_1^*+\cdots + \mathbf{l}_n \mathbf{u}_n^*
+\end{align}
+
+where remember the outer product of vectors gives a matrix:
+\begin{align}\label{outer_product}
+\mathbf{a} \mathbf{b}^*=\begin{bmatrix}
+a_1 \\ 
+\vdots \\ 
+a_m
+\end{bmatrix} 
+\begin{bmatrix}
+b_1 & \cdots & b_m 
+\end{bmatrix} 
+=\begin{bmatrix}
+a_1 b_1 & a_1 b_2 & \cdots & a_1 b_m \\ 
+a_2 b_1 & a_2 b_2 & \cdots & a_2 b_m \\ 
+\cdots & \cdots & \cdots & \cdots \\ 
+a_m b_1 & a_m b_2 & \cdots & a_m b_m
+\end{bmatrix} 
+\end{align}
+
+We want to find factors that make \eqref{we_want} true while at the same time, define $L$ as a unit lower triangular matrix and $U$ an upper triangular matrix. \textit{We omit permutation matrices at the moment.}
+
+What we know about $L$ is that
+
+\begin{equation}\label{L_structure}
+L=\begin{bmatrix}
+1 & 0  & 0 & \cdots & 0 & 0 \\ 
+l_{2,1} & 1 & 0 & 0 &\cdots & 0 \\ 
+l_{3,1} & l_{3,2} & 1 & 0 &\cdots & 0\\ 
+\cdots & \cdots & \cdots  & \cdots&\cdots&\cdots \\
+\cdots & \cdots & \cdots  & \cdots&\cdots&\cdots \\
+l_{n,1} & l_{n,2} & l_{n,3} & \cdots & l_{n, n-1} & 1
+\end{bmatrix} =\begin{bmatrix}
+| & • & | \\ 
+\mathbf{l}_1 & \cdots & \mathbf{l}_1 \\ 
+| & • & |
+\end{bmatrix}
+\end{equation}
+
+so that 
+\begin{equation}
+\mathbf{l}_k=
+\begin{bmatrix}
+0 \\ 
+\cdots \\ 
+1 \\ 
+l_{k+1,k} \\ 
+l_{k+2,k} \\ 
+\cdots \\ 
+l_{n,k}
+\end{bmatrix} 
+\end{equation}
+Note that under this convention, the first row of $U$ is the first row of $A$! In other words
+\begin{equation}
+\mathbf{u}^*_1=[ A_{1,1}\;\; A_{12} \cdots \;\; A_{1n} ]\hspace{0.2in}(\text{\texttt{=A[1,:]}})
+\end{equation}
+
+
+\section{What $L_k$ do}
+
+Remember the $L_k$ are the matrix operators that reduce the matrix $A$ one row at a time. Suppose 
+
+\begin{equation}
+A=\left[\begin{array}{rrrr}
+3 & 0 & -1 & 1 \\ 
+2 & -1 & 1 & 0 \\ 
+-2 & 2 & 3 & 3 \\ 
+7 & 0 & 0 & 2
+\end{array} \right]
+\end{equation}
+And then of course we choose to divide each row by $A_{1,1}=3$. For the first column we maintain the first row as is. Note as we go down the first column, we have the second row $[2,-2,7]^T$ must kill off its first component using the first row. We do  require 
+\begin{equation}
+[2,-1,1,0]-\frac{2}{3}[3, 0, -1, 1]=[0, -1, 5/3, -2/3]
+\end{equation}
+for the next row we need
+\begin{equation}
+[-2,2,3,3]-\frac{-2}{3}[3, 0, -1, 1]=[0, 2, 7/3, 11/3]
+\end{equation}
+and the next row 
+\begin{equation}
+[7,0,0,2]-\frac{7}{3}[3, 0, -1, 1]=[0, 0, 7/3, -1/3]
+\end{equation}
+Note this is like grabbing the submatrix for $i=0$, as
+\begin{equation}
+A[i+1: ,:]=\left[\begin{array}{rrrr}
+2 & -1 & 1 & 0 \\ 
+-2 & 2 & 3 & 3 \\ 
+7 & 0 & 0 & 2
+\end{array} \right]
+\end{equation}
+and then taken with $\mathbf{v}_i'=\mathbf{v}_i[i+1:]\leftarrow$\footnote{Note NOT $\mathbf{v}_i$! We extract the part of $\mathbf{v}_i$ below the 1 on the diagonal! $\mathbf{v}_0=[1\;\; 2/3\;\;-2/3\;\;7/3]^T$.}
+\begin{equation}
+A[i+1: ,:]- \underbrace{\texttt{np.dot}(\mathbf{v}'_i, A[i])}_{\text{outer product!}}
+\end{equation}
+\begin{align*}
+=\left[\begin{array}{rrrr}
+2 & -1 & 1 & 0 \\ 
+-2 & 2 & 3 & 3 \\ 
+7 & 0 & 0 & 2
+\end{array} \right]- \left[\begin{array}{r}
+2/3 \\ 
+-2/3 \\ 
+7/3
+\end{array}\right] [3, 0, -1, 1]\\
+=\left[\begin{array}{rrrr}
+0 & -1 & 5/3 & -2/3 \\ 
+0 & 2 & 7/3 & 11/3 \\ 
+0 & 0 & 7/3 & -1/3
+\end{array} \right] 
+\end{align*}
+and note
+\begin{equation}
+L_1A=\left[\begin{array}{rrrr}
+3 & 0 & -1 & 1 \\
+0 & -1 & 5/3 & -2/3 \\ 
+0 & 2 & 7/3 & 11/3 \\ 
+0 & 0 & 7/3 & -1/3
+\end{array} \right] 
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,168 @@
+
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{enumerate}
+\usepackage{amsmath, amsthm, amssymb, bm}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{color}
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{ex}{Example}[section]
+\newtheorem{proposition}{Proposition}[section]
+\makeatletter
+\newcommand{\vast}{\bBigg@{3}}
+\newcommand{\Vast}{\bBigg@{4}}
+\makeatother
+\usepackage{setspace}
+\usepackage[left=3.2cm,right=3.2cm,top=3.8cm,bottom=4cm]{geometry}
+\usepackage{epsfig}
+ \usepackage[tight,footnotesize]{subfigure}
+\usepackage{apacite}
+ 
+  
+ 
+  
+
+ %Ultimately Lebowitz and Speer decided this was too abstract and commented on the order of the information presented. I will update to a new version
+
+ 
+\title{Solution outline Project 2 2022}
+ 
+
+\author{C\'{e}sar Ram\'{i}rez Ib\'{a}\~{n}ez  }
+\date{December 1, 2022 }
+
+
+%This was created on Nov 22, 2022 
+ 
+\begin{document}
+
+
+\maketitle
+
+\section{Derivatives of cost functionals}
+ 
+
+For the loss functionals
+\begin{equation}\label{1} 
+J_1(\overline{W})=\sum_{i=1}^m (1-y_i \overline{W}\cdot\overline{X}_i^T)^2 \hspace{0.2in}
+\big( \text{linear regression}\big)
+\end{equation}
+\begin{equation}\label{2} 
+J_2(\overline{W})=\sum_{i=1}^m \log(1+ e^{-y_i \overline{W}\cdot\overline{X}_i^T}) \hspace{0.2in}\big( \text{logistic regression}\big)
+\end{equation}
+\begin{equation}\label{3} 
+J_3(\overline{W})=\sum_{i=1}^m \log(1+ e^{-y_i \overline{W}\cdot\overline{X}_i^T}) +\frac{\lambda}{2}\|\overline{W}\|_2^2 \hspace{0.2in}\big( \text{regularized logistic regression}\big)
+\end{equation}
+
+
+Let us at the moment take $J:=J_2$. I found it easier to directly compute the partial derivatives of $J_2$. For $\overline{W}=(w_1,...,w_d)$ we compute w.r.t $w_k$ for $1\leq  k\leq d$ to get (noticing I write  $\overline{X}_i=(x_1^{(i)},..., x_d^{(i)})$)
+
+\begin{align*}
+\frac{\partial }{\partial w_k} &\log\Big( 1+e^{-y_i\overline{W}\cdot \overline{X}_i^T} \Big)\\
+&=\frac{\partial }{\partial w_k} \log\Big( 1+e^{-y_i(w_1 x_1^{(i)}+\cdots +w_d x_d^{(i)})} \Big)=\frac{-y_i x_k^{(i)}}{1+e^{-y_i \overline{W}\cdot \overline{X}_i^T}}e^{-y_i \overline{W}\cdot \overline{X}_i^T}
+\end{align*}
+which multiplying and dividing by $e^{+y_i \overline{W}\cdot \overline{X}_i^T}$ becomes, after introducing the notation
+\begin{equation}\label{p_i_def}
+p_i:=p_i(\overline{W})=\frac{1}{1+e^{+y_i \overline{W}\cdot \overline{X}_i^T}}
+\end{equation}
+from where we see that the $i$th gradient contribution in \eqref{2} is given by
+\begin{equation}\label{gradient_individ}
+\nabla_W\log\Big( 1+e^{-y_i\overline{W}\cdot \overline{X}_i^T} \Big)=-y_ip_i\overline{X}_i^T\hspace{0.2in}\text{(a column vector!)}
+\end{equation}
+and using the notation $P:=\text{diag}[p_1,...,p_d]$, we get after adding all the contributions of type \eqref{gradient_individ} we obtain 
+\begin{equation}
+\nabla J(\overline{W})=-X^T P \overline{y}=-\sum_{i=1}^m y_i p_i \overline{X}_i^T
+\end{equation}
+and following the [Aggarwal] notation\footnote{This author follows some convention where a Hessian is \textbf{the transpose} of some calculus convention of the differential $\frac{\partial }{\partial \overline{W}}$ that he adopts. } and emphasizing the $\overline{W}$-dependence of the $p_i$ we obtain
+\begin{equation}\label{aggarwal_5_17}
+H=\left[ \frac{\partial \nabla J(\overline{W})}{\partial \overline{W}} \right]^T
+=-\sum_{i=1}^m y_i  \left[ \frac{\partial }{\partial \overline{W}}\big(p_i(\overline{W}) \overline{X}_i^T \big)\right]^T
+\end{equation}
+In the denominator layout [Aggarwal] follows, the derivative of the column vector $p_i(\overline{W})\overline{X}_i^T$ w.r.t. the column vector $\overline{W}$ is based on the identity (iii) of his Table 4.2 (b) which is namely, for $\mathbf{x}:\mathbb{R}^d\rightarrow \mathbb{R}^d$ (COLUMN vector!) and $g:\mathbb{R}^d\rightarrow \mathbb{R}$ scalar-valued: 
+\begin{equation}\label{identity_table_aggarwal}
+\frac{\partial}{\partial \overline{W}}\Big[g(\overline{W})\mathbf{x}(\overline{W})\Big]=\frac{\partial g}{\partial \overline{W}}\mathbf{x}^T+g(\overline{W})\frac{\partial \mathbf{x}}{\partial \overline{W}} \hspace{0.2in}\leftarrow\text{(p. 173 [Aggarwal])}
+\end{equation}
+where remember in [Aggarwal] convention the derivative of a scalar function w.r.t to column vector is a column vector. The derivative of a col vector w.r.t. another col vector is a matrix. But [Aggarwal] arranges gradients of scalar functions as columns, so unlike many standard calculus courses, the gradient of each component of a vector field is arranged as a column, whereas many follow the convention that the gradients of each scalar component are arranged in rows. 
+
+In our case, each vector $\overline{X}_i$ is independent of $\overline{W}$ and so \eqref{identity_table_aggarwal} applied to our case gives (noting that for us, $\mathbf{x}=\overline{X}_i^T $ is a column vector)
+
+\begin{equation}\label{what_derivative_1}
+\begin{aligned}
+\frac{\partial }{\partial \overline{W}}\big(p_i(\overline{W}) \overline{X}_i^T \big)
+\end{aligned}=\frac{\partial p_i}{\partial \overline{W}}\overline{X}_i=
+\end{equation}
+
+Note 
+\begin{equation}
+\frac{\partial [e^{y_i\overline{W}\cdot \overline{X}_i^T} ]}{\partial \overline{W}}= \exp\left({y_i\overline{W}\cdot \overline{X}_i^T}\right) y_i\overline{X}_i^T =\frac{(1-p_i)y_i}{p_i} \overline{X}_i^T
+\end{equation}
+so that
+\begin{align}\label{partial_p_i}
+\frac{\partial p_i}{\partial \overline{W}}=-p_i^2\cdot\frac{(1-p_i)y_i}{p_i} \overline{X}_i^T
+= -y_i p_i(1-p_i)\overline{X}_i^T
+\end{align}
+so \eqref{what_derivative_1} into the expression for $H$ in \eqref{aggarwal_5_17} becomes 
+
+\begin{equation}\label{what_derivative_1}
+H=  \sum_{i=1}^m y_i^2  p_i(1-p_i)\overline{X}_i^T  \overline{X}_i
+=\sum_{i=1}^m    p_i(1-p_i)\overline{X}_i^T  \overline{X}_i
+\end{equation}
+\textit{where remember $\overline{X}_i$ is a row vector, so $\overline{X}_i^T  \overline{X}_i$ is a rank-1 $d\times d$ matrix.}\footnote{In the convention that $\overline{X}_i$ is a column vector, it would be $ \overline{X}_i  \overline{X}_i^T$ instead in \eqref{what_derivative_1}}
+
+
+For $A_1$ the characteristic polynomial is $P_1(\lambda)=(\lambda-3)(\lambda-1)$ gives eigenvalues arranged into the change of basis matrix
+ \begin{equation}
+ C_1=\frac{1}{\sqrt{2}} \left[ \begin{array}{rr}
+1 &-1 \\ 
+1 & 1
+\end{array} \right] 
+ \end{equation}
+we get
+\begin{align*}
+A_1=\begin{bmatrix}
+2 & 1 \\ 
+1 & 2
+\end{bmatrix} =\frac{1}{2} \left[ \begin{array}{rr}
+1 &-1 \\ 
+1 & 1
+\end{array} \right] 
+ \left[ \begin{array}{rr}
+3 & 0 \\ 
+0 & 1
+\end{array} \right]
+ \left[ \begin{array}{rr}
+  1 &  1 \\ 
+ -1 &  1
+\end{array} \right]\\
+=\frac{3}{2} \begin{bmatrix}
+1 \\ 
+1
+\end{bmatrix} [1 \;\;\; 1]+\frac{1}{2} \begin{bmatrix}
+-1 \\ 
+ 1
+\end{bmatrix} [-1 \;\;\; 1]
+\end{align*}
+and since $C_1=V$ and $C_1^{-1}=U^T$ are orthogonal, we note we have already provided  an SVD decomposition and don't have to do anything else. For $A_2$, $P_2(\lambda)=(\lambda-3)(\lambda-1)$ and we get 
+ 
+\begin{equation}
+ C_2=  \begin{bmatrix}
+ 1/2 & -1/2 \\ 
+ 1 & 1
+ \end{bmatrix}  
+ \end{equation}
+is a matrix that diagonalizes $A_2=C_2 D_2 C_{2}^{-1}$. However this is not an SVD decomposition because $C_2$ (unlike the previous case $C_1$) is not an orthogonal matrix. To get an SVD decomposition we have to diagonalize the matrix $M=A^T A$ to get $\Sigma^T \Sigma=\text{diag}[9\;\; 1]$ of full rank and a change of basis matrix $U$. 
+
+
+
+
+
+
+
+
+\end{document}

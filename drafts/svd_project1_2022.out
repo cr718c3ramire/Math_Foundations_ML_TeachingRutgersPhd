@@ -1,0 +1,13 @@
+\BOOKMARK [1][-]{section.1}{QR algorithm for eigenvalues, Big Picture First}{}% 1
+\BOOKMARK [1][-]{section.2}{QR method for eigenvalues and Householder reflections}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Upper Hessenberg form of a matrix}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Step \(i\) of algorithm: Householder reflections for upper Hessenberg form}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Singular Value Decomposition Project}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{How many types of SVDs?}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Truncated SVD}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.3}{The project itself}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.4}{Getting VT and U}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.5}{What about ?}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.6}{What about V?}{section.3}% 11
+\BOOKMARK [1][-]{section.4}{What if we converged to something good enough?}{}% 12
+\BOOKMARK [1][-]{section.5}{Potential Difficulties project}{}% 13

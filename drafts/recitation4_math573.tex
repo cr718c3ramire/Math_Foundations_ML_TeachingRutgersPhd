@@ -1,0 +1,91 @@
+\documentclass{beamer}
+\usetheme{Boadilla}
+\usepackage[utf8]{inputenc}
+\usepackage{enumerate}
+\usepackage{amsmath, amsthm, amssymb, bm}
+\usepackage{amsfonts}
+\newtheorem{proposition}{Proposition}
+\usepackage{color}
+
+
+\usepackage{apacite}
+
+
+
+ 
+\title{LU}
+
+\begin{document}
+ 
+\begin{frame}
+\maketitle
+\end{frame}
+
+
+\begin{frame}
+{Outer Products and LU}
+
+\begin{align}\label{we_want}
+LU=\begin{bmatrix}
+| & • & | \\ 
+\mathbf{l}_1 & \cdots & \mathbf{l}_n \\ 
+| & • & |
+\end{bmatrix} 
+\begin{bmatrix}
+\text{---}\text{---} & \mathbf{u}_1^*& \text{---}\text{---} \\ 
+  & \cdots &  \\ 
+\text{---}\text{---} & \mathbf{u}_n^*& \text{---}\text{---}
+\end{bmatrix} 
+=\mathbf{l}_1 \mathbf{u}_1^*+\cdots + \mathbf{l}_n \mathbf{u}_n^*
+\end{align}
+\end{frame}
+
+\begin{frame}
+
+where remember the outer product of vectors gives a matrix:
+\begin{align}\label{outer_product}
+\mathbf{a} \mathbf{b}^*=\begin{bmatrix}
+a_1 \\ 
+\vdots \\ 
+a_m
+\end{bmatrix} 
+\begin{bmatrix}
+b_1 & \cdots & b_m 
+\end{bmatrix} 
+=\begin{bmatrix}
+a_1 b_1 & a_1 b_2 & \cdots & a_1 b_m \\ 
+a_2 b_1 & a_2 b_2 & \cdots & a_2 b_m \\ 
+\cdots & \cdots & \cdots & \cdots \\ 
+a_m b_1 & a_m b_2 & \cdots & a_m b_m
+\end{bmatrix} 
+\end{align}
+\end{frame}
+
+
+\begin{frame}
+{What $L_k$ do}
+
+Remember the $L_k$ are the matrix operators that reduce the matrix $A$ one row at a time. Suppose 
+
+\begin{equation}
+A=\left[\begin{array}{rrrr}
+3 & 0 & -1 & 1 \\ 
+2 & -1 & 1 & 0 \\ 
+-2 & 2 & 3 & 3 \\ 
+7 & 0 & 0 & 2
+\end{array} \right]
+\end{equation}
+And then of course we choose to divide each row by $A_{1,1}=3$.
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+\end{document}
+
